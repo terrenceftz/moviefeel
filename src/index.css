@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-lavender: #E6E6FA;
+  --color-thistle: #D8BFD8;
+  --color-cinema-bg: #FDFDFD;
+  --color-cinema-ink: #1A1A1A;
+}
+
+@layer base {
+  body {
+    @apply bg-cinema-bg text-cinema-ink font-sans antialiased transition-all duration-500;
+  }
+
+  /* Style: Swiss (Clean, Modernist) */
+  .style-swiss {
+    --style-border: 1px solid rgba(26, 26, 26, 0.1);
+    --style-radius: 0px;
+    --style-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  /* Style: Brutalist (Raw, Technical) */
+  .style-brutalist {
+    @apply font-mono;
+    --style-border: 2px solid #1A1A1A;
+    --style-radius: 0px;
+    --style-shadow: 6px 6px 0px #1A1A1A;
+  }
+
+  /* Style: Neo (Soft, Organic) */
+  .style-neo {
+    @apply tracking-tight;
+    --style-border: 0px solid transparent;
+    --style-radius: 1.5rem;
+    --style-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-sans font-extrabold tracking-tighter uppercase;
+  }
+
+  .serif-italic {
+    @apply font-serif italic;
+  }
+}
+
+@layer components {
+  .swiss-grid {
+    @apply grid grid-cols-4 md:grid-cols-12 gap-1;
+    border: 1px solid var(--color-cinema-ink);
+  }
+
+  .grid-cell {
+    @apply p-4 border border-cinema-ink/10;
+  }
+
+  .movie-poster-container {
+    @apply relative overflow-hidden bg-gray-100 aspect-[2/3];
+  }
+
+  .movie-poster-container img {
+    @apply w-full h-full object-cover transition-transform duration-700 ease-in-out;
+  }
+
+  .movie-poster-container:hover img {
+    @apply scale-105;
+  }
+
+  .lavender-gradient {
+    background: linear-gradient(135deg, var(--color-lavender) 0%, var(--color-thistle) 100%);
+  }
+}
+
+/* Custom fade animations for route/view transitions */
+.view-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.view-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}

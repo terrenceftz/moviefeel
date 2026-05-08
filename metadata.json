@@ -1,0 +1,9 @@
+{
+  "name": "Cinema Archive",
+  "description": "A high-aesthetic movie viewing record system with Swiss Modernism design and AI-driven cinematography insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "AI_METADATA_ENHANCEMENT",
+    "CINEMATIC_DATA_VISUALIZATION"
+  ]
+}
