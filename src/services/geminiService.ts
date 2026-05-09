@@ -48,10 +48,10 @@ export async function enhanceMovieMetadata(movie: Partial<Movie>): Promise<Parti
     const result = JSON.parse(response.text);
     return {
       ...movie,
-      quote: result.quote,
-      moodTags: result.moodTags,
-      emotionalProfile: result.emotionalProfile,
-      primaryColor: result.primaryColor
+      quote: movie.quote || result.quote,
+      moodTags: movie.moodTags && movie.moodTags.length > 0 ? movie.moodTags : result.moodTags,
+      emotionalProfile: movie.emotionalProfile && movie.emotionalProfile.length > 0 ? movie.emotionalProfile : result.emotionalProfile,
+      primaryColor: movie.primaryColor || result.primaryColor
     };
   } catch (error) {
     console.error("Gemini Enhancement Error:", error);

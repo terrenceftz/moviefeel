@@ -4,12 +4,16 @@ import { INITIAL_MOVIES } from './constants';
 import { Navigation } from './components/Navigation';
 import { GridGallery } from './components/GridGallery';
 import { Timeline } from './components/Timeline';
+import { WatchlistView } from './components/WatchlistView';
+import { ArchiveParallaxView } from './components/ArchiveParallaxView';
+import { Footer } from './components/Footer';
 import { MovieDetail } from './components/MovieDetail';
 import { MovieForm } from './components/MovieForm';
 import { LoginForm } from './components/LoginForm';
 import { DoubanSync } from './components/DoubanSync';
 import { MovieSummary } from './components/GenreHeatmap';
 import { AnimatePresence, motion } from 'motion/react';
+import { ArrowUp } from 'lucide-react';
 
 export default function App() {
   const [movies, setMovies] = useState<Movie[]>(() => {
@@ -46,9 +50,18 @@ export default function App() {
     return sessionStorage.getItem('is_admin') === 'true';
   });
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [layoutStyle, setLayoutStyle] = useState<'swiss' | 'brutalist' | 'neo'>(() => {
     return (localStorage.getItem('cinema_layout_style') as any) || 'swiss';
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('cinema_archive_movies', JSON.stringify(movies));
@@ -220,32 +233,23 @@ export default function App() {
           {viewMode === 'archive' && (
             <motion.div
               key="archive"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="pt-32 px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <div className="mb-12 border-b-2 border-cinema-ink pb-8">
-                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter">全部馆藏</h1>
-                <p className="text-xl opacity-40 font-mono mt-4">THE COMPLETE ARCHIVE ({watchedMovies.length})</p>
-              </div>
-              <GridGallery movies={watchedMovies} onSelect={setSelectedMovie} hideHero layoutStyle={layoutStyle} />
+              <ArchiveParallaxView movies={watchedMovies} onSelect={setSelectedMovie} layoutStyle={layoutStyle} />
             </motion.div>
           )}
 
           {viewMode === 'watchlist' && (
             <motion.div
               key="watchlist"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="pt-32 px-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="pt-20"
             >
-              <div className="mb-12 border-b-2 border-cinema-ink pb-8 bg-lavender/10 p-12">
-                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter">待看清单</h1>
-                <p className="text-xl opacity-40 font-mono mt-4">THE WATCHLIST ({watchlistMovies.length})</p>
-              </div>
-              <GridGallery movies={watchlistMovies} onSelect={setSelectedMovie} hideHero layoutStyle={layoutStyle} />
+              <WatchlistView movies={watchlistMovies} onSelect={setSelectedMovie} layoutStyle={layoutStyle} />
             </motion.div>
           )}
 
@@ -279,6 +283,7 @@ export default function App() {
       <AnimatePresence>
         {selectedMovie && (
           <MovieDetail 
+            key={`detail-overlay-${selectedMovie.id}`}
             movie={selectedMovie} 
             onClose={() => setSelectedMovie(null)} 
             onEdit={(m) => {
@@ -287,11 +292,13 @@ export default function App() {
             }}
             onDelete={handleDeleteMovie}
             isAdmin={isAuthenticated}
+            layoutStyle={layoutStyle}
           />
         )}
         
         {isFormOpen && (
           <MovieForm 
+            key={`form-overlay-${editingMovie?.id || 'new'}`}
             initialMovie={editingMovie || undefined}
             onSave={handleSaveMovie} 
             onClose={() => {
@@ -303,6 +310,7 @@ export default function App() {
 
         {isSyncOpen && (
           <DoubanSync 
+            key="sync-overlay"
             onImport={handleImportBatch}
             onClose={() => setIsSyncOpen(false)}
             existingMovies={movies}
@@ -311,6 +319,7 @@ export default function App() {
 
         {isLoginOpen && (
           <LoginForm 
+            key="login-overlay"
             onLogin={handleLoginSuccess}
             onClose={() => setIsLoginOpen(false)}
           />
@@ -323,10 +332,31 @@ export default function App() {
       }`}>
         <div className={`h-full w-full ${layoutStyle === 'brutalist' ? 'grid grid-cols-12 md:grid-cols-24 gap-px' : 'swiss-grid'}`}>
            {Array.from({ length: 48 }).map((_, i) => (
-             <div key={`bg-grid-${i}`} className={`border border-cinema-ink ${layoutStyle === 'brutalist' ? 'border-dashed' : ''}`} />
+             <div key={`app-bg-grid-${i}-${layoutStyle}`} className={`border border-cinema-ink ${layoutStyle === 'brutalist' ? 'border-dashed' : ''}`} />
            ))}
         </div>
       </div>
+      {/* Footer */}
+      <Footer layoutStyle={layoutStyle} />
+
+      {/* Floating Back to Top */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className={`fixed bottom-8 right-8 z-[100] w-12 h-12 flex items-center justify-center transition-all ${
+              layoutStyle === 'neo' ? 'bg-white shadow-2xl rounded-2xl text-lavender' : 
+              layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white border-2 border-cinema-ink shadow-[4px_4px_0_white]' : 
+              'bg-cinema-ink text-white hover:bg-lavender hover:text-cinema-ink'
+            }`}
+          >
+            <ArrowUp size={20} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

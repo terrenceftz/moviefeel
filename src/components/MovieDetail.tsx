@@ -10,15 +10,42 @@ interface MovieDetailProps {
   onEdit: (movie: Movie) => void;
   onDelete: (movie: Movie) => void;
   isAdmin?: boolean;
+  layoutStyle?: 'swiss' | 'brutalist' | 'neo';
 }
 
-export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit, onDelete, isAdmin }) => {
+export const MovieDetail: React.FC<MovieDetailProps> = ({ 
+  movie, onClose, onEdit, onDelete, isAdmin, layoutStyle = 'swiss' 
+}) => {
+  const containerClasses = {
+    swiss: "bg-white/60 backdrop-blur-3xl",
+    brutalist: "bg-white",
+    neo: "bg-zinc-50/40 backdrop-blur-3xl"
+  };
+
+  const buttonClasses = {
+    swiss: "border-2 border-cinema-ink bg-white shadow-[4px_4px_0_var(--color-cinema-ink)]",
+    brutalist: "border-4 border-cinema-ink bg-white shadow-[8px_8px_0_var(--color-cinema-ink)] hover:-translate-y-1 hover:-translate-x-1",
+    neo: "bg-white/80 backdrop-blur-md rounded-full shadow-lg border-0 px-6 py-4"
+  };
+
+  const posterFrameClasses = {
+    swiss: "shadow-[20px_20px_0_rgba(0,0,0,0.05)]",
+    brutalist: "border-8 border-cinema-ink shadow-[20px_20px_0_var(--color-lavender)]",
+    neo: "rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)]"
+  };
+
+  const yearBadgeClasses = {
+    swiss: "bg-cinema-ink text-white",
+    brutalist: "bg-cinema-ink text-white border-4 border-cinema-ink",
+    neo: "bg-white text-cinema-ink rounded-full shadow-xl"
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-white overflow-y-auto font-sans"
+      className={`fixed inset-0 z-[100] bg-white overflow-y-auto ${layoutStyle === 'brutalist' ? 'font-mono' : 'font-sans'}`}
     >
       {/* Background Cinematic Still (Backdrop) */}
       <div className="fixed inset-0 z-0">
@@ -30,15 +57,15 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
         />
       </div>
 
-      <div className="min-h-screen relative z-10 bg-white/60 backdrop-blur-3xl flex flex-col md:flex-row">
+      <div className={`min-h-screen relative z-10 flex flex-col md:flex-row transition-all duration-700 ${containerClasses[layoutStyle]}`}>
         {/* Navigation / Actions */}
         <div className="fixed top-4 md:top-8 left-4 md:left-8 right-4 md:right-8 z-[110] flex justify-between items-center pointer-events-none">
           <button 
             onClick={onClose}
-            className="pointer-events-auto flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-lavender p-2 md:p-3 transition-colors border-2 border-cinema-ink bg-white shadow-[2px_2px_0_var(--color-cinema-ink)] md:shadow-[4px_4px_0_var(--color-cinema-ink)]"
+            className={`pointer-events-auto flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all p-3 ${buttonClasses[layoutStyle]}`}
           >
-            <ArrowLeft size={14} md:size={16} />
-            <span className="hidden sm:inline">返回影库</span>
+            <ArrowLeft size={16} />
+            <span className="hidden sm:inline">返回影库 Back to Archive</span>
           </button>
 
           <div className="flex items-center space-x-2 md:space-x-4 pointer-events-auto">
@@ -46,9 +73,9 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
               <>
                 <button 
                     onClick={() => onEdit(movie)}
-                    className="flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest hover:bg-lavender p-2 md:p-3 transition-colors border-2 border-cinema-ink bg-white shadow-[2px_2px_0_var(--color-cinema-ink)] md:shadow-[4px_4px_0_var(--color-cinema-ink)]"
+                    className={`flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all p-3 bg-white ${buttonClasses[layoutStyle]}`}
                 >
-                    <Edit2 size={12} md:size={14} />
+                    <Edit2 size={14} />
                     <span className="hidden sm:inline">编辑</span>
                 </button>
                 <button 
@@ -57,10 +84,12 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
                           onDelete(movie);
                       }
                     }}
-                    className="flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest bg-red-600 text-white p-2 md:p-3 transition-all border-2 border-cinema-ink shadow-[2px_2px_0_var(--color-cinema-ink)] md:shadow-[4px_4px_0_var(--color-cinema-ink)] hover:bg-red-700 active:translate-x-0.5 active:translate-y-0.5"
+                    className={`flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest p-3 transition-all ${
+                      layoutStyle === 'neo' ? 'bg-red-50 text-red-600 rounded-full shadow-lg' : 'bg-red-600 text-white'
+                    } ${layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[8px_8px_0_#1A1A1A]' : (layoutStyle === 'swiss' ? 'border-2 border-cinema-ink' : '')}`}
                     title="彻底删除此条目"
                 >
-                    <Trash2 size={12} md:size={14} />
+                    <Trash2 size={14} />
                     <span className="hidden md:inline">删除</span>
                 </button>
               </>
@@ -69,21 +98,23 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
         </div>
 
         {/* Left Column: Visuals */}
-        <div className="w-full md:w-[40%] md:h-screen md:sticky top-0 flex items-center justify-center p-8 md:p-12 overflow-hidden border-b md:border-b-0 md:border-r border-cinema-ink/5 pt-20 md:pt-12">
+        <div className={`w-full md:w-[40%] md:h-screen md:sticky top-0 flex items-center justify-center p-8 md:p-12 transition-all duration-700 ${
+          layoutStyle === 'brutalist' ? 'bg-zinc-100 border-r-4 border-cinema-ink' : (layoutStyle === 'swiss' ? 'border-r border-cinema-ink/5' : '')
+        } pt-24 md:pt-12`}>
           <motion.div 
             initial={{ scale: 0.9, opacity: 0, rotateY: 20 }}
             animate={{ scale: 1, opacity: 1, rotateY: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-[280px] md:max-w-sm shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative group"
+            className={`w-full max-w-[280px] md:max-w-sm relative group transition-all duration-700 ${posterFrameClasses[layoutStyle]}`}
           >
              <img 
               src={movie.posterUrl} 
               alt={movie.title} 
-              className="w-full relative z-10"
+              className={`w-full relative z-10 ${layoutStyle === 'neo' ? 'rounded-[3rem]' : ''}`}
               referrerPolicy="no-referrer"
             />
             {/* Year Badge */}
-            <div className="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-cinema-ink flex items-center justify-center text-white font-sans font-black text-xl md:text-2xl z-20 shadow-xl">
+            <div className={`absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 flex items-center justify-center font-black text-xl md:text-3xl z-20 transition-all ${yearBadgeClasses[layoutStyle]}`}>
               {movie.year}
             </div>
           </motion.div>
@@ -96,32 +127,50 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
         </div>
 
         {/* Right Column: Content */}
-        <div className="w-full md:w-[60%] p-6 md:p-24 space-y-12 md:space-y-16">
-          <section className="space-y-4">
+        <div className={`w-full md:w-[60%] p-6 md:p-24 space-y-12 md:space-y-16 ${layoutStyle === 'neo' ? 'md:py-32' : ''}`}>
+          <section className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-               <span className="text-[10px] font-mono text-cinema-ink/40 uppercase tracking-widest">Directed by {movie.director}</span>
+               <span className={`text-[10px] font-mono font-black uppercase tracking-[0.4em] ${layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-2 py-1' : 'opacity-40'}`}>
+                 Directed by {movie.director}
+               </span>
                <div className="hidden sm:block h-px flex-1 bg-cinema-ink/10" />
-               <div className="flex items-center self-start text-xs font-bold bg-zinc-100 px-3 py-1 border border-cinema-ink/5">
-                  <Star size={12} className="mr-1 text-yellow-500" />
-                  TMDB: {movie.tmdbRating}/10
+               <div className={`flex items-center self-start text-xs font-bold px-4 py-2 ${
+                 layoutStyle === 'neo' ? 'bg-white rounded-full shadow-sm' : 'bg-zinc-100 border border-cinema-ink/5'
+               }`}>
+                  <Star size={12} className="mr-2 text-yellow-500 fill-current" />
+                  TMDB Score {movie.tmdbRating}
                </div>
             </div>
             
-            <h1 className="text-5xl sm:text-7xl md:text-9xl break-words leading-[0.85] font-black">{movie.title}</h1>
+            <h1 className={`text-6xl sm:text-7xl md:text-9xl break-words leading-[0.85] font-black tracking-tighter ${
+              layoutStyle === 'swiss' ? 'italic' : ''
+            }`}>
+              {movie.title}
+            </h1>
             
-            <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-6">
-               <div className="flex items-center text-xl md:text-2xl font-black bg-lavender px-4 py-3 md:px-6 md:py-3 shadow-[4px_4px_0_var(--color-cinema-ink)] md:shadow-[8px_8px_0_var(--color-cinema-ink)] transition-spacing">
-                  <span className="text-[10px] font-mono uppercase tracking-widest mr-4 opacity-40">User Score</span>
-                  {movie.userRating}/10
+            <div className="flex flex-col sm:flex-row sm:items-center gap-8 pt-6">
+               <div className={`flex items-center text-2xl md:text-4xl font-black px-6 py-4 transition-all ${
+                 layoutStyle === 'brutalist' ? 'bg-yellow-400 border-4 border-cinema-ink shadow-[12px_12px_0_#1A1A1A]' : 
+                 layoutStyle === 'neo' ? 'bg-white text-cinema-ink rounded-[2rem] shadow-xl' :
+                 'bg-lavender shadow-[8px_8px_0_#1A1A1A] italic'
+               }`}>
+                  <span className="text-[10px] font-mono uppercase tracking-widest mr-6 opacity-40">User Score</span>
+                  {movie.userRating}
+                  <span className="text-sm opacity-30 ml-1">/10</span>
                </div>
-               <div className="text-[10px] md:text-[10px] font-mono text-cinema-ink/40 uppercase tracking-[0.2em]">
-                 Archive Entry • {movie.viewingDate}
+               <div className="text-[10px] font-mono text-cinema-ink/40 uppercase tracking-[0.3em]">
+                 Archive Entry Ref. {movie.id?.slice(0, 8)} <br/>
+                 Captured On {movie.viewingDate}
                </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-4 md:pt-6">
-              {movie.moodTags?.map((tag, i) => (
-                <span key={`detail-tag-${movie.id || 'new'}-${tag}-${i}`} className="text-[9px] md:text-[10px] font-black px-3 py-1 md:px-4 md:py-1.5 border border-cinema-ink/20 uppercase tracking-widest">
+            <div className="flex flex-wrap gap-3 pt-6" key={`detail-tags-container-${movie.id}`}>
+                {movie.moodTags?.map((tag, i) => (
+                <span key={`detail-tag-${movie.id}-${i}-${layoutStyle}`} className={`text-[10px] font-black px-5 py-2 uppercase tracking-widest transition-all ${
+                  layoutStyle === 'neo' ? 'bg-lavender/10 text-lavender rounded-full' : 
+                  layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white' :
+                  'border border-cinema-ink/20'
+                }`}>
                   {tag}
                 </span>
               ))}
@@ -133,51 +182,81 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="aspect-video w-full overflow-hidden shadow-2xl grayscale group hover:grayscale-0 transition-all duration-1000 border border-cinema-ink/10"
+            className={`aspect-video w-full overflow-hidden transition-all duration-1000 grayscale group hover:grayscale-0 ${
+              layoutStyle === 'neo' ? 'rounded-[3rem] shadow-2xl' : 
+              layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[12px_12px_0_#1A1A1A]' :
+              'shadow-2xl border border-cinema-ink/10'
+            }`}
           >
              <img 
                src={movie.backdropUrl || movie.posterUrl} 
-               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+               className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" 
                alt="Cinematic Still"
                referrerPolicy="no-referrer"
              />
           </motion.section>
 
           {/* Quote Section */}
-          <section className="relative py-4 md:py-8">
-            <Quote className="absolute -top-4 -left-4 text-lavender/40 w-12 h-12 md:w-16 md:h-16" />
-            <p className="font-serif italic text-2xl md:text-5xl leading-tight text-cinema-ink relative z-10 pl-6 md:pl-8">
+          <section className={`relative py-8 md:py-16 px-8 md:px-12 transition-all ${
+            layoutStyle === 'neo' ? 'bg-white rounded-[3rem] shadow-sm' : 
+            layoutStyle === 'brutalist' ? 'bg-zinc-100 border-4 border-cinema-ink shadow-[8px_8px_0_#1A1A1A]' : ''
+          }`}>
+            <Quote className={`absolute -top-4 -left-4 w-12 h-12 md:w-20 md:h-20 ${
+              layoutStyle === 'neo' ? 'text-lavender/20' : 'text-lavender/40'
+            }`} />
+            <p className={`font-serif italic text-3xl md:text-6xl leading-tight text-cinema-ink relative z-10 ${
+              layoutStyle === 'brutalist' ? 'uppercase font-black not-italic tracking-tighter' : ''
+            }`}>
               {movie.quote || "捕捉电影中的珍贵瞬间..."}
             </p>
           </section>
 
           {/* Review Section */}
-          <section className="grid grid-cols-1 xl:grid-cols-2 gap-12 md:gap-16 border-t border-cinema-ink/5 pt-12 md:pt-16">
-            <div className="space-y-8">
-              <h4 className="text-[10px] font-black tracking-[0.3em] text-cinema-ink/30 uppercase">Personal Narrative</h4>
-              <div className="space-y-4">
-                <p className="text-lg md:text-xl leading-relaxed font-sans text-cinema-ink/80 whitespace-pre-wrap italic">
+          <section className={`grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-24 pt-12 md:pt-20 border-t ${
+            layoutStyle === 'brutalist' ? 'border-cinema-ink border-t-8' : 'border-cinema-ink/5'
+          }`}>
+            <div className="space-y-12">
+              <div className="space-y-8">
+                <h4 className={`text-[10px] font-black tracking-[0.4em] uppercase ${
+                  layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-3 py-1 inline-block' : 'text-cinema-ink/30'
+                }`}>
+                  Personal Narrative
+                </h4>
+                <p className={`text-xl md:text-2xl leading-relaxed text-cinema-ink/80 whitespace-pre-wrap italic font-serif ${
+                  layoutStyle === 'brutalist' ? 'font-mono not-italic' : ''
+                }`}>
                   {movie.userComment || "该记录没有留下评价。"}
                 </p>
-                <div className="h-px w-8 bg-lavender" />
-                <h4 className="text-[10px] font-black tracking-[0.3em] text-cinema-ink/30 uppercase pt-4">Movie Synopsis (TMDB)</h4>
-                <p className="text-sm leading-relaxed text-cinema-ink/60">
+                <div className="h-[2px] w-12 bg-lavender" />
+              </div>
+
+              <div className="space-y-6 opacity-60">
+                <h4 className="text-[10px] font-black tracking-[0.4em] uppercase text-cinema-ink/40">Movie Synopsis</h4>
+                <p className="text-base leading-relaxed">
                   {movie.overview}
                 </p>
               </div>
             </div>
 
             {movie.emotionalProfile && (
-              <div className="space-y-8">
-                <h4 className="text-[10px] font-black tracking-[0.3em] text-cinema-ink/30 uppercase">Atmospheric Spectrum</h4>
-                <div className="h-[250px] md:h-[300px] w-full border border-cinema-ink/5 p-4 bg-white/40 shadow-inner">
+              <div className="space-y-10">
+                <h4 className={`text-[10px] font-black tracking-[0.4em] uppercase ${
+                  layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-3 py-1 inline-block' : 'text-cinema-ink/30'
+                }`}>
+                  Atmospheric Spectrum
+                </h4>
+                <div className={`h-[350px] md:h-[450px] w-full p-8 transition-all ${
+                  layoutStyle === 'neo' ? 'bg-white rounded-[3rem] shadow-xl' : 
+                  layoutStyle === 'brutalist' ? 'bg-white border-4 border-cinema-ink shadow-[12px_12px_0_#1A1A1A]' :
+                  'bg-white/40 shadow-inner border border-cinema-ink/5'
+                }`}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={movie.emotionalProfile}>
+                    <RadarChart key={`radar-${movie.id}`} cx="50%" cy="50%" outerRadius="80%" data={movie.emotionalProfile}>
                       <PolarGrid stroke="#eee" />
                       <PolarAngleAxis dataKey="label" tick={(props: any) => {
                         const { x, y, payload } = props;
                         return (
-                          <text x={x} y={y} textAnchor="middle" fontSize={8} fontWeight={800} fill="#666">
+                          <text x={x} y={y} textAnchor="middle" fontSize={10} fontWeight={900} fill="#1A1A1A" className="uppercase font-mono">
                             {payload.value}
                           </text>
                         );
@@ -187,7 +266,7 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({ movie, onClose, onEdit
                         dataKey="intensity"
                         stroke={movie.primaryColor || "#D8BFD8"}
                         fill={movie.primaryColor || "#D8BFD8"}
-                        fillOpacity={0.5}
+                        fillOpacity={0.6}
                       />
                     </RadarChart>
                   </ResponsiveContainer>

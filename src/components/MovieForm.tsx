@@ -25,6 +25,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
     posterUrl: '',
     overview: '',
     userComment: '',
+    quote: '',
     genre: [],
     viewingDate: new Date().toISOString().split('T')[0],
   });
@@ -115,9 +116,9 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
 
           {searchResults.length > 0 && (
             <div className="absolute top-full left-0 w-full bg-white border border-cinema-ink mt-1 z-10 shadow-xl">
-              {searchResults.map(result => (
+              {searchResults.map((result, idx) => (
                 <button
-                  key={`search-result-${result.id}`}
+                  key={`search-result-${result.id}-${idx}`}
                   onClick={() => handleSelectTMDB(result)}
                   className="w-full text-left p-3 hover:bg-lavender flex items-center space-x-3 transition-colors border-b border-cinema-ink/5 last:border-0"
                 >
@@ -143,7 +144,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
               <input 
                 required
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-lg font-sans"
-                value={movie.title}
+                value={movie.title || ''}
                 onChange={e => setMovie({...movie, title: e.target.value})}
               />
             </div>
@@ -152,7 +153,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
               <input 
                 required
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-lg"
-                value={movie.director}
+                value={movie.director || ''}
                 onChange={e => setMovie({...movie, director: e.target.value})}
               />
             </div>
@@ -164,8 +165,8 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
               <input 
                 type="number"
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2"
-                value={movie.year}
-                onChange={e => setMovie({...movie, year: parseInt(e.target.value)})}
+                value={movie.year || ''}
+                onChange={e => setMovie({...movie, year: parseInt(e.target.value) || 0})}
               />
             </div>
             <div className="space-y-1">
@@ -173,8 +174,8 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
               <input 
                 type="number" step="0.1"
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2"
-                value={movie.userRating}
-                onChange={e => setMovie({...movie, userRating: parseFloat(e.target.value)})}
+                value={movie.userRating || 0}
+                onChange={e => setMovie({...movie, userRating: parseFloat(e.target.value) || 0})}
               />
             </div>
             <div className="space-y-1">
@@ -182,7 +183,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
               <input 
                 type="date"
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2"
-                value={movie.viewingDate}
+                value={movie.viewingDate || ''}
                 onChange={e => setMovie({...movie, viewingDate: e.target.value})}
               />
             </div>
@@ -192,9 +193,19 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
             <label className="text-[10px] font-bold uppercase tracking-widest">我的评价</label>
             <textarea 
               className="w-full min-h-[100px] border border-cinema-ink/10 focus:border-cinema-ink outline-none p-4 font-sans text-sm resize-none italic bg-zinc-50"
-              value={movie.userComment}
+              value={movie.userComment || ''}
               placeholder="这部电影给你留下了什么评价？"
               onChange={e => setMovie({...movie, userComment: e.target.value})}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest">经典金句台词 (AI 自动捕捉或手动输入)</label>
+            <textarea 
+              className="w-full min-h-[60px] border border-cinema-ink/10 focus:border-cinema-ink outline-none p-4 font-sans text-sm resize-none italic bg-zinc-50"
+              value={movie.quote || ''}
+              placeholder="输入该电影最触动人心的一句台词..."
+              onChange={e => setMovie({...movie, quote: e.target.value})}
             />
           </div>
 
@@ -202,7 +213,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
             <label className="text-[10px] font-bold uppercase tracking-widest">电影简介 (来自 TMDB)</label>
             <textarea 
               className="w-full min-h-[80px] border border-cinema-ink/10 focus:border-cinema-ink outline-none p-4 font-sans text-sm resize-none bg-zinc-50"
-              value={movie.overview}
+              value={movie.overview || ''}
               onChange={e => setMovie({...movie, overview: e.target.value})}
             />
           </div>
@@ -211,7 +222,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
             <label className="text-[10px] font-bold uppercase tracking-widest">类型 (逗号分隔)</label>
             <input 
               className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-sm"
-              value={movie.genre?.join(', ')}
+              value={movie.genre?.join(', ') || ''}
               onChange={e => setMovie({...movie, genre: e.target.value.split(',').map(s => s.trim())})}
             />
           </div>
@@ -226,7 +237,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
               <label className="text-[10px] font-bold uppercase tracking-widest">海报 URL (可选)</label>
               <input 
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-xs"
-                value={movie.posterUrl}
+                value={movie.posterUrl || ''}
                 placeholder="https://..."
                 onChange={e => setMovie({...movie, posterUrl: e.target.value})}
               />
@@ -238,18 +249,18 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
                    type="checkbox" 
                    id="favorite"
                    className="w-4 h-4 accent-cinema-ink" 
-                   checked={movie.isFavorite}
+                   checked={!!movie.isFavorite}
                    onChange={e => setMovie({...movie, isFavorite: e.target.checked})}
                  />
                  <label htmlFor="favorite" className="text-xs font-bold uppercase tracking-widest cursor-pointer select-none">加入心动收藏 Add to Favorites</label>
               </div>
-
+ 
               <div className="flex items-center space-x-3">
                  <input 
                    type="checkbox" 
                    id="watchlist"
                    className="w-4 h-4 accent-cinema-ink" 
-                   checked={movie.isWatchlist}
+                   checked={!!movie.isWatchlist}
                    onChange={e => setMovie({...movie, isWatchlist: e.target.checked})}
                  />
                  <label htmlFor="watchlist" className="text-xs font-bold uppercase tracking-widest cursor-pointer select-none text-lavender-dark">加入待看清单 Add to Watchlist</label>

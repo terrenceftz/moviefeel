@@ -142,13 +142,13 @@ export const MovieSummary: React.FC<MovieSummaryProps> = ({ movies }) => {
             </div>
             <div className="space-y-4">
               <p className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] opacity-40">最偏好的类型</p>
-              <div className="flex flex-wrap gap-2">
-                {mainGenres.length > 0 ? mainGenres.map(([genre]) => (
-                  <span key={genre} className="text-[10px] font-black border border-white/20 group-hover:border-cinema-ink/20 px-2 py-1 flex items-center">
-                    {genre}
-                  </span>
-                )) : <span className="opacity-20 italic">尚无分类信息</span>}
-              </div>
+                <div className="flex flex-wrap gap-2" key={`summary-genres-list-${movies.length}`}>
+                  {mainGenres.length > 0 ? mainGenres.map(([genre], i) => (
+                    <span key={`summary-main-genre-${genre}-${i}`} className="text-[10px] font-black border border-white/20 group-hover:border-cinema-ink/20 px-2 py-1 flex items-center">
+                      {genre}
+                    </span>
+                  )) : <span className="opacity-20 italic" key="no-genres">尚无分类信息</span>}
+                </div>
             </div>
           </motion.div>
         </div>
@@ -180,9 +180,9 @@ export const MovieSummary: React.FC<MovieSummaryProps> = ({ movies }) => {
 
             <div className="space-y-12">
                {/* Visual distribution visualization */}
-               <div className="space-y-6">
+               <div className="space-y-6" key={`summary-dist-list-${movies.length}`}>
                  {sortedGenres.slice(0, 5).map(([genre, count], idx) => (
-                   <div key={genre} className="space-y-2">
+                   <div key={`summary-dist-item-${genre}-${idx}-${count}`} className="space-y-2">
                      <div className="flex justify-between items-end text-xs font-mono font-black uppercase opacity-60">
                        <span>{genre}</span>
                        <span>{count} / {totalCount}</span>
@@ -205,7 +205,7 @@ export const MovieSummary: React.FC<MovieSummaryProps> = ({ movies }) => {
         {/* Footer Swiss Grid Decor */}
         <div className="grid grid-cols-12 h-1 overflow-hidden opacity-10">
            {Array.from({ length: 12 }).map((_, i) => (
-             <div key={i} className={`h-full border-r border-white ${i % 3 === 0 ? 'bg-white' : ''}`} />
+             <div key={`summary-decor-grid-${i}`} className={`h-full border-r border-white ${i % 3 === 0 ? 'bg-white' : ''}`} />
            ))}
         </div>
       </div>
