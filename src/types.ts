@@ -30,4 +30,4 @@ export interface Movie {
   backdropUrl?: string; 
 }
 
-export type ViewMode = 'grid' | 'timeline' | 'gallery' | 'summary' | 'archive' | 'watchlist';
+export type ViewMode = 'grid' | 'timeline' | 'gallery' | 'summary' | 'archive' | 'watchlist' | 'settings';
