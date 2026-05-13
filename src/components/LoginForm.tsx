@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Lock, User } from 'lucide-react';
+import { validateCredentials } from '../services/authService';
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -13,7 +14,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onClose }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'Terrence' && password === 'admin123') {
+    if (validateCredentials(username, password)) {
       onLogin();
     } else {
       setError('凭据不正确。身份验证失败。');

@@ -1,7 +1,184 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Save, CheckCircle, XCircle, Loader2, Key } from 'lucide-react';
+import { Eye, EyeOff, Save, CheckCircle, XCircle, Loader2, Key, UserCog, User, Lock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { testTmdbConnection } from '../services/tmdbService';
+import { updateUsername, updatePassword, getCredentials } from '../services/authService';
+
+function AccountCard({ layoutStyle }: { layoutStyle: 'swiss' | 'brutalist' | 'neo' }) {
+  const [usernamePwd, setUsernamePwd] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [usernameMsg, setUsernameMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const [pwdCurrent, setPwdCurrent] = useState('');
+  const [pwdNew, setPwdNew] = useState('');
+  const [pwdConfirm, setPwdConfirm] = useState('');
+  const [passwordMsg, setPasswordMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const cardClasses = {
+    swiss: "bg-white border border-cinema-ink/10 shadow-sm",
+    brutalist: "bg-white border-2 border-cinema-ink shadow-[6px_6px_0_#1a1a1a]",
+    neo: "bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20"
+  };
+
+  const handleUpdateUsername = () => {
+    const result = updateUsername(usernamePwd, newUsername);
+    if (result.success) {
+      setUsernameMsg({ type: 'success', text: '用户名已更新' });
+      setUsernamePwd('');
+      setNewUsername('');
+      setTimeout(() => setUsernameMsg(null), 2000);
+    } else {
+      setUsernameMsg({ type: 'error', text: result.error! });
+    }
+  };
+
+  const handleUpdatePassword = () => {
+    if (pwdNew !== pwdConfirm) {
+      setPasswordMsg({ type: 'error', text: '两次输入的新密码不一致' });
+      return;
+    }
+    const result = updatePassword(pwdCurrent, pwdNew);
+    if (result.success) {
+      setPasswordMsg({ type: 'success', text: '密码已更新' });
+      setPwdCurrent('');
+      setPwdNew('');
+      setPwdConfirm('');
+      setTimeout(() => setPasswordMsg(null), 2000);
+    } else {
+      setPasswordMsg({ type: 'error', text: result.error! });
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+      className={`p-6 md:p-10 mt-8 ${cardClasses[layoutStyle]}`}
+    >
+      <h2 className="text-xl font-black uppercase tracking-wider mb-8 flex items-center space-x-2">
+        <span className="w-2 h-6 bg-lavender block" />
+        <span>账号管理</span>
+        <UserCog size={20} className="text-cinema-ink/30 ml-2" />
+      </h2>
+
+      <div className="text-[10px] font-mono text-cinema-ink/40 mb-6">
+        当前账号：<span className="font-bold text-cinema-ink">{getCredentials().username}</span>
+      </div>
+
+      <div className="space-y-8">
+        {/* Change Username */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-cinema-ink/50">修改用户名</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-cinema-ink/20" size={16} />
+              <input
+                type="password"
+                value={usernamePwd}
+                onChange={e => { setUsernamePwd(e.target.value); setUsernameMsg(null); }}
+                placeholder="当前密码"
+                className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none py-3 pl-10 pr-4 text-sm transition-colors ${
+                  layoutStyle === 'neo' ? 'rounded-xl' : ''
+                }`}
+              />
+            </div>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-cinema-ink/20" size={16} />
+              <input
+                type="text"
+                value={newUsername}
+                onChange={e => { setNewUsername(e.target.value); setUsernameMsg(null); }}
+                placeholder="新用户名"
+                className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none py-3 pl-10 pr-4 text-sm transition-colors ${
+                  layoutStyle === 'neo' ? 'rounded-xl' : ''
+                }`}
+              />
+            </div>
+          </div>
+          {usernameMsg && (
+            <p className={`text-[10px] font-bold uppercase tracking-tighter ${
+              usernameMsg.type === 'success' ? 'text-green-600' : 'text-red-500'
+            }`}>{usernameMsg.text}</p>
+          )}
+          <button
+            onClick={handleUpdateUsername}
+            disabled={!usernamePwd || !newUsername.trim()}
+            className={`flex items-center justify-center space-x-2 py-3 px-6 font-black uppercase tracking-widest text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+              layoutStyle === 'neo' ? 'bg-cinema-ink text-white rounded-full hover:bg-lavender hover:text-cinema-ink' :
+              'bg-cinema-ink text-white hover:bg-lavender hover:text-cinema-ink'
+            }`}
+          >
+            <Save size={14} />
+            <span>更新用户名</span>
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-cinema-ink/5" />
+
+        {/* Change Password */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-cinema-ink/50">修改密码</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-cinema-ink/20" size={16} />
+              <input
+                type="password"
+                value={pwdCurrent}
+                onChange={e => { setPwdCurrent(e.target.value); setPasswordMsg(null); }}
+                placeholder="当前密码"
+                className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none py-3 pl-10 pr-4 text-sm transition-colors ${
+                  layoutStyle === 'neo' ? 'rounded-xl' : ''
+                }`}
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-cinema-ink/20" size={16} />
+              <input
+                type="password"
+                value={pwdNew}
+                onChange={e => { setPwdNew(e.target.value); setPasswordMsg(null); }}
+                placeholder="新密码"
+                className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none py-3 pl-10 pr-4 text-sm transition-colors ${
+                  layoutStyle === 'neo' ? 'rounded-xl' : ''
+                }`}
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-cinema-ink/20" size={16} />
+              <input
+                type="password"
+                value={pwdConfirm}
+                onChange={e => { setPwdConfirm(e.target.value); setPasswordMsg(null); }}
+                placeholder="确认新密码"
+                className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none py-3 pl-10 pr-4 text-sm transition-colors ${
+                  layoutStyle === 'neo' ? 'rounded-xl' : ''
+                }`}
+              />
+            </div>
+          </div>
+          {passwordMsg && (
+            <p className={`text-[10px] font-bold uppercase tracking-tighter ${
+              passwordMsg.type === 'success' ? 'text-green-600' : 'text-red-500'
+            }`}>{passwordMsg.text}</p>
+          )}
+          <button
+            onClick={handleUpdatePassword}
+            disabled={!pwdCurrent || !pwdNew || !pwdConfirm}
+            className={`flex items-center justify-center space-x-2 py-3 px-6 font-black uppercase tracking-widest text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+              layoutStyle === 'neo' ? 'bg-cinema-ink text-white rounded-full hover:bg-lavender hover:text-cinema-ink' :
+              'bg-cinema-ink text-white hover:bg-lavender hover:text-cinema-ink'
+            }`}
+          >
+            <Save size={14} />
+            <span>更新密码</span>
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 interface SettingsPanelProps {
   layoutStyle: 'swiss' | 'brutalist' | 'neo';
@@ -63,7 +240,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ layoutStyle }) => 
           </div>
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">设置</h1>
           <p className={`text-lg md:text-xl opacity-70 max-w-xl ${layoutStyle === 'brutalist' ? 'font-mono' : 'font-serif italic'}`}>
-            管理 TMDB API 连接与系统配置
+            管理 TMDB API 连接、账号与系统配置
           </p>
         </div>
       </motion.div>
@@ -178,6 +355,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ layoutStyle }) => 
             </div>
           </div>
         </motion.div>
+
+        {/* Account Management Card */}
+        <AccountCard layoutStyle={layoutStyle} />
 
         {/* Attributions */}
         <motion.div
