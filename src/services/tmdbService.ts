@@ -1,5 +1,11 @@
+function getAccessToken(): string | undefined {
+  const localToken = localStorage.getItem('cinema_tmdb_token');
+  if (localToken) return localToken;
+  return import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
+}
+
 const getHeaders = () => {
-  const token = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
+  const token = getAccessToken();
   return {
     'accept': 'application/json',
     'Authorization': `Bearer ${token}`
@@ -21,22 +27,19 @@ export interface TMDBMovie {
 }
 
 export async function searchMovies(query: string): Promise<TMDBMovie[]> {
-  const token = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
-  
+  const token = getAccessToken();
+
   if (!token || token === 'YOUR_TMDB_READ_ACCESS_TOKEN') {
-    console.warn('TMDB API 令牌未配置。请在 Secrets 中设置 VITE_TMDB_READ_ACCESS_TOKEN');
+    console.warn('TMDB API 令牌未配置。请在设置页面中填写 TMDB Read Access Token');
     return [];
   }
 
   try {
     const response = await fetch(
       `${BASE_URL}/search/multi?query=${encodeURIComponent(query)}&language=zh-CN`,
-      { 
-        method: 'GET', 
-        headers: getHeaders() 
-      }
+      { method: 'GET', headers: getHeaders() }
     );
-    
+
     if (!response.ok) {
       const errData = await response.json();
       console.error('TMDB API 响应错误:', response.status, errData);
@@ -52,8 +55,8 @@ export async function searchMovies(query: string): Promise<TMDBMovie[]> {
 }
 
 export async function getMovieDetails(tmdbId: number, type: 'movie' | 'tv' = 'movie') {
-  const token = import.meta.env.VITE_TMDB_READ_ACCESS_TOKEN;
-  if (!token) return null;
+  const token = getAccessToken();
+  if (!token || token === 'YOUR_TMDB_READ_ACCESS_TOKEN') return null;
 
   try {
     const [detailResp, creditsResp] = await Promise.all([
@@ -66,10 +69,10 @@ export async function getMovieDetails(tmdbId: number, type: 'movie' | 'tv' = 'mo
     const details = await detailResp.json();
     const creditsData = await creditsResp.json();
 
-    const director = type === 'movie' 
+    const director = type === 'movie'
       ? (creditsData.crew?.find((c: any) => c.job === 'Director')?.name || '未知导演')
       : (details.created_by?.[0]?.name || '未知创作');
-    
+
     const year = type === 'movie'
       ? (details.release_date ? new Date(details.release_date).getFullYear() : 0)
       : (details.first_air_date ? new Date(details.first_air_date).getFullYear() : 0);
@@ -91,5 +94,19 @@ export async function getMovieDetails(tmdbId: number, type: 'movie' | 'tv' = 'mo
   } catch (error) {
     console.error('TMDB 详情获取异常:', error);
     return null;
+  }
+}
+
+export async function testTmdbConnection(token: string): Promise<boolean> {
+  try {
+    const resp = await fetch(`${BASE_URL}/authentication`, {
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return resp.ok;
+  } catch {
+    return false;
   }
 }
