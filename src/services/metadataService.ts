@@ -68,14 +68,6 @@ const DEFAULT_COLOR = "#6C63FF";
 
 const EMOTIONAL_DIMENSION_LABELS = ["情感深度", "视觉冲击", "叙事张力", "人文关怀", "想象力"];
 
-function findGenreMatch(genres: string[], map: Record<string, string>): string | undefined {
-  for (const genre of genres) {
-    const key = Object.keys(map).find(k => k.toLowerCase() === genre.toLowerCase());
-    if (key) return map[key];
-  }
-  return undefined;
-}
-
 function normalizeGenre(genre: string): string {
   const lower = genre.trim().toLowerCase();
   const aliases: Record<string, string> = {
