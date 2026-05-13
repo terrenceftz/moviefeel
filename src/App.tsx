@@ -14,6 +14,7 @@ import { LoginForm } from './components/LoginForm';
 import { DoubanSync } from './components/DoubanSync';
 import { SettingsPanel } from './components/SettingsPanel';
 import { MovieSummary } from './components/GenreHeatmap';
+import { getSiteName } from './services/configService';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
 
@@ -79,6 +80,15 @@ export default function App() {
     };
     window.addEventListener('set-view', handleSetView);
     return () => window.removeEventListener('set-view', handleSetView);
+  }, []);
+
+  useEffect(() => {
+    document.title = getSiteName();
+    const handler = (e: Event) => {
+      document.title = (e as CustomEvent).detail;
+    };
+    window.addEventListener('site-name-changed', handler);
+    return () => window.removeEventListener('site-name-changed', handler);
   }, []);
 
   const handleSaveMovie = (updatedMovie: Movie) => {

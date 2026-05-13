@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Save, CheckCircle, XCircle, Loader2, Key, UserCog, User, Lock } from 'lucide-react';
+import { Eye, EyeOff, Save, CheckCircle, XCircle, Loader2, Key, UserCog, User, Lock, Globe, Server } from 'lucide-react';
 import { motion } from 'motion/react';
 import { testTmdbConnection } from '../services/tmdbService';
 import { updateUsername, updatePassword, getCredentials } from '../services/authService';
+import { getSiteName, setSiteName, getEmbyConfig, setEmbyConfig, clearEmbyConfig } from '../services/configService';
+import { testEmbyConnection } from '../services/embyService';
 
 function AccountCard({ layoutStyle }: { layoutStyle: 'swiss' | 'brutalist' | 'neo' }) {
   const [usernamePwd, setUsernamePwd] = useState('');
@@ -174,6 +176,191 @@ function AccountCard({ layoutStyle }: { layoutStyle: 'swiss' | 'brutalist' | 'ne
             <Save size={14} />
             <span>更新密码</span>
           </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function SiteNameCard({ layoutStyle }: { layoutStyle: 'swiss' | 'brutalist' | 'neo' }) {
+  const [name, setName] = useState(getSiteName());
+  const [saved, setSaved] = useState(false);
+
+  const cardClasses = {
+    swiss: "bg-white border border-cinema-ink/10 shadow-sm",
+    brutalist: "bg-white border-2 border-cinema-ink shadow-[6px_6px_0_#1a1a1a]",
+    neo: "bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20"
+  };
+
+  const handleSave = () => {
+    setSiteName(name);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.25 }}
+      className={`p-6 md:p-10 mt-8 ${cardClasses[layoutStyle]}`}
+    >
+      <h2 className="text-xl font-black uppercase tracking-wider mb-8 flex items-center space-x-2">
+        <span className="w-2 h-6 bg-lavender block" />
+        <span>站点设置</span>
+        <Globe size={20} className="text-cinema-ink/30 ml-2" />
+      </h2>
+      <div className="space-y-4">
+        <div className="relative">
+          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 text-cinema-ink/20" size={16} />
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="站点名称"
+            className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none py-3 pl-10 pr-4 text-sm transition-colors ${
+              layoutStyle === 'neo' ? 'rounded-xl' : ''
+            }`}
+          />
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={!name.trim()}
+          className={`flex items-center justify-center space-x-2 py-3 px-6 font-black uppercase tracking-widest text-xs transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+            saved ? 'bg-green-500 text-white' :
+            layoutStyle === 'neo' ? 'bg-cinema-ink text-white rounded-full hover:bg-lavender hover:text-cinema-ink' :
+            'bg-cinema-ink text-white hover:bg-lavender hover:text-cinema-ink'
+          }`}
+        >
+          {saved ? <CheckCircle size={14} /> : <Save size={14} />}
+          <span>{saved ? '已保存' : '保存站点名称'}</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function EmbyCard({ layoutStyle }: { layoutStyle: 'swiss' | 'brutalist' | 'neo' }) {
+  const existing = getEmbyConfig();
+  const [serverUrl, setServerUrl] = useState(existing?.serverUrl || '');
+  const [apiToken, setApiToken] = useState(existing?.apiToken || '');
+  const [showToken, setShowToken] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
+
+  const cardClasses = {
+    swiss: "bg-white border border-cinema-ink/10 shadow-sm",
+    brutalist: "bg-white border-2 border-cinema-ink shadow-[6px_6px_0_#1a1a1a]",
+    neo: "bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20"
+  };
+
+  const handleSave = () => {
+    if (serverUrl.trim() && apiToken.trim()) {
+      setEmbyConfig(serverUrl, apiToken);
+    } else {
+      clearEmbyConfig();
+    }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleTest = async () => {
+    setTesting(true);
+    setTestStatus('testing');
+    const ok = await testEmbyConnection(serverUrl.trim(), apiToken.trim());
+    setTestStatus(ok ? 'success' : 'error');
+    setTesting(false);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className={`p-6 md:p-10 mt-8 ${cardClasses[layoutStyle]}`}
+    >
+      <h2 className="text-xl font-black uppercase tracking-wider mb-8 flex items-center space-x-2">
+        <span className="w-2 h-6 bg-lavender block" />
+        <span>Emby 服务器</span>
+        <Server size={20} className="text-cinema-ink/30 ml-2" />
+      </h2>
+
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-cinema-ink/60">服务器地址</label>
+          <input
+            type="text"
+            value={serverUrl}
+            onChange={e => { setServerUrl(e.target.value); setTestStatus('idle'); }}
+            placeholder="https://emby.yourdomain.com"
+            className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none p-4 text-sm transition-colors ${
+              layoutStyle === 'neo' ? 'rounded-xl' : ''
+            }`}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-cinema-ink/60">API 令牌</label>
+          <div className="relative">
+            <input
+              type={showToken ? 'text' : 'password'}
+              value={apiToken}
+              onChange={e => { setApiToken(e.target.value); setTestStatus('idle'); }}
+              placeholder="Emby API Key"
+              className={`w-full border border-cinema-ink/20 focus:border-cinema-ink outline-none p-4 pr-12 text-sm font-mono transition-colors ${
+                layoutStyle === 'neo' ? 'rounded-xl' : ''
+              }`}
+            />
+            <button
+              onClick={() => setShowToken(!showToken)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-cinema-ink/40 hover:text-cinema-ink transition-colors"
+              type="button"
+            >
+              {showToken ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <button
+            onClick={handleSave}
+            className={`flex-1 flex items-center justify-center space-x-2 py-4 font-black uppercase tracking-widest text-sm transition-all ${
+              saved ? 'bg-green-500 text-white' :
+              'bg-cinema-ink text-white hover:bg-lavender hover:text-cinema-ink'
+            } ${layoutStyle === 'neo' ? 'rounded-full' : ''}`}
+          >
+            {saved ? <CheckCircle size={18} /> : <Save size={18} />}
+            <span>{saved ? '已保存' : '保存配置'}</span>
+          </button>
+
+          <button
+            onClick={handleTest}
+            disabled={!serverUrl.trim() || !apiToken.trim() || testing}
+            className={`flex-1 flex items-center justify-center space-x-2 py-4 font-black uppercase tracking-widest text-sm border-2 border-cinema-ink transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+              testStatus === 'success' ? 'bg-green-50 text-green-700 border-green-500' :
+              testStatus === 'error' ? 'bg-red-50 text-red-700 border-red-500' :
+              'hover:bg-zinc-50 text-cinema-ink'
+            } ${layoutStyle === 'neo' ? 'rounded-full' : ''}`}
+          >
+            {testStatus === 'testing' ? <Loader2 size={18} className="animate-spin" /> :
+             testStatus === 'success' ? <CheckCircle size={18} /> :
+             testStatus === 'error' ? <XCircle size={18} /> : <span className="text-lg">⚡</span>}
+            <span>{testStatus === 'testing' ? '测试中...' :
+                   testStatus === 'success' ? '连接成功' :
+                   testStatus === 'error' ? '连接失败' : '测试连接'}</span>
+          </button>
+        </div>
+
+        <div className={`p-4 text-xs font-mono space-y-2 ${
+          layoutStyle === 'neo' ? 'bg-zinc-50 rounded-2xl' : 'bg-zinc-50'
+        }`}>
+          <div className="flex justify-between">
+            <span className="opacity-50">连接状态:</span>
+            <span className={existing ? 'text-green-600 font-bold' : 'text-red-500'}>
+              {existing ? '已配置' : '未配置'}
+            </span>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -355,6 +542,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ layoutStyle }) => 
             </div>
           </div>
         </motion.div>
+
+        {/* Emby Server Card */}
+        <EmbyCard layoutStyle={layoutStyle} />
+
+        {/* Site Name Card */}
+        <SiteNameCard layoutStyle={layoutStyle} />
 
         {/* Account Management Card */}
         <AccountCard layoutStyle={layoutStyle} />

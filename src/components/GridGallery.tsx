@@ -3,6 +3,7 @@ import { Movie } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Star, Heart, ArrowRight } from 'lucide-react';
 import { MovieSummary } from './GenreHeatmap';
+import { RecentImports } from './RecentImports';
 
 interface MovieCardProps {
   movie: Movie;
@@ -313,6 +314,10 @@ export const GridGallery: React.FC<GridGalleryProps> = ({
   return (
     <div className={`transition-all duration-1000 ${containerClasses[layoutStyle]}`}>
       {!hideHero && <CinemaHero movies={movies} onClick={onSelect} layoutStyle={layoutStyle} />}
+
+      <div className="max-w-7xl mx-auto">
+        <RecentImports layoutStyle={layoutStyle} />
+      </div>
 
       {favoriteMovies.length > 0 && (
         <section className={`px-4 md:px-12 py-20 md:py-32 space-y-12 md:space-y-24 relative overflow-hidden transition-all duration-700 ${sectionClasses[layoutStyle]}`}>

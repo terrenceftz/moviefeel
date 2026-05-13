@@ -52,6 +52,33 @@ async function startServer() {
     }
   });
 
+  // Emby Proxy API
+  app.get("/api/emby-proxy", async (req, res) => {
+    const { url } = req.query;
+    console.log(`Emby proxy request: ${url}`);
+
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ error: "Missing URL parameter" });
+    }
+
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+        },
+        timeout: 15000,
+      });
+
+      res.status(response.status);
+      res.header("Content-Type", "application/json");
+      res.send(response.data);
+    } catch (error: any) {
+      console.error("Emby proxy error:", error.message);
+      res.status(500).json({ error: "Failed to fetch from Emby", message: error.message });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

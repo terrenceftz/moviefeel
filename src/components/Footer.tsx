@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Film, Github, Mail, ArrowUp } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getSiteName } from '../services/configService';
 
 interface FooterProps {
   layoutStyle?: 'swiss' | 'brutalist' | 'neo';
 }
 
 export const Footer: React.FC<FooterProps> = ({ layoutStyle = 'swiss' }) => {
+  const [siteName, setSiteNameState] = useState(getSiteName());
+
+  useEffect(() => {
+    const handler = (e: Event) => setSiteNameState((e as CustomEvent).detail);
+    window.addEventListener('site-name-changed', handler);
+    return () => window.removeEventListener('site-name-changed', handler);
+  }, []);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -29,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ layoutStyle = 'swiss' }) => {
              }`}>
                C
              </div>
-             <span className="text-2xl font-black uppercase tracking-tighter">Cinema.Archive</span>
+             <span className="text-2xl font-black uppercase tracking-tighter">{siteName}</span>
           </div>
           <p className={`text-lg md:text-xl font-medium leading-relaxed opacity-60 ${layoutStyle === 'brutalist' ? 'font-mono uppercase' : 'font-serif italic'}`}>
             一个私人影视记忆库，旨在捕捉和保存每一个在大银幕前怦然心动的瞬间。在这里，电影不仅是影像，更是时间的切片。

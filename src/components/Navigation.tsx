@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Movie, ViewMode } from '../types';
 import { Film, Calendar, LayoutGrid, ListFilter, Plus, LogOut, User, RefreshCw, BarChart3, Menu, X, Settings } from 'lucide-react';
+import { getSiteName } from '../services/configService';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface NavigationProps {
@@ -14,10 +15,17 @@ interface NavigationProps {
   setLayoutStyle: (style: 'swiss' | 'brutalist' | 'neo') => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ 
-  currentView, setView, onAdd, onSync, isAuthenticated, onLogout, layoutStyle, setLayoutStyle 
+export const Navigation: React.FC<NavigationProps> = ({
+  currentView, setView, onAdd, onSync, isAuthenticated, onLogout, layoutStyle, setLayoutStyle
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [siteName, setSiteNameState] = useState(getSiteName());
+
+  useEffect(() => {
+    const handler = (e: Event) => setSiteNameState((e as CustomEvent).detail);
+    window.addEventListener('site-name-changed', handler);
+    return () => window.removeEventListener('site-name-changed', handler);
+  }, []);
 
   const navClasses = {
     swiss: "bg-cinema-bg/80 backdrop-blur-md border-b border-cinema-ink/10",
@@ -43,7 +51,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="w-8 h-8 md:w-10 md:h-10 bg-cinema-ink flex items-center justify-center text-white font-bold text-lg md:text-xl shrink-0">
             C
           </div>
-          <span className="font-sans font-black tracking-tighter text-lg md:text-2xl uppercase truncate max-w-[100px] sm:max-w-none">Cinema.Archive</span>
+          <span className="font-sans font-black tracking-tighter text-lg md:text-2xl uppercase truncate max-w-[100px] sm:max-w-none">{siteName}</span>
         </div>
 
         <div className="flex items-center space-x-2 md:space-x-6">
