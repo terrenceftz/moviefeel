@@ -13,6 +13,8 @@ export interface Movie {
   overview: string; // TMDB synopsis
   viewingDate: string;
   genre: string[];
+  cast?: string[];
+  runtime?: number; // minutes
   isFavorite?: boolean;
   isWatchlist?: boolean;
   

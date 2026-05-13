@@ -14,7 +14,7 @@ interface MovieCardProps {
 export const MovieCard: React.FC<MovieCardProps> = ({ movie, onClick, index, layoutStyle = 'swiss' }) => {
   const cardClasses = {
     swiss: "bg-white border border-cinema-ink/5 p-3 hover:border-cinema-ink shadow-sm hover:shadow-xl",
-    brutalist: "bg-white border-2 border-cinema-ink p-1.5 hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0_rgba(0,0,0,1)] hover:shadow-[4px_4px_0_rgba(0,0,0,1)]",
+    brutalist: "bg-white border-2 border-cinema-ink p-1.5 hover:-translate-x-0.5 hover:-translate-y-0.5 shadow-[2px_2px_0_var(--color-cinema-ink)] hover:shadow-[4px_4px_0_var(--color-cinema-ink)]",
     neo: "bg-white shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.08)] rounded-xl p-3 border-0"
   };
 
@@ -92,7 +92,7 @@ const CinemaHero: React.FC<{ movies: Movie[]; onClick: (m: Movie) => void; layou
 
   return (
     <section className={`relative w-full h-[80vh] md:h-screen overflow-hidden flex items-center justify-center transition-all duration-1000 ${
-      layoutStyle === 'brutalist' ? 'bg-[#1A1A1A]' : 
+      layoutStyle === 'brutalist' ? 'bg-cinema-ink' : 
       layoutStyle === 'neo' ? 'bg-zinc-100/30' : 'bg-cinema-ink'
     }`}>
       {/* Dynamic Background Layer */}
@@ -100,90 +100,112 @@ const CinemaHero: React.FC<{ movies: Movie[]; onClick: (m: Movie) => void; layou
         <motion.div
            key={`bg-${currentMovie.id}-${layoutStyle}`}
            initial={{ opacity: 0 }}
-           animate={{ opacity: layoutStyle === 'brutalist' ? 0.4 : layoutStyle === 'neo' ? 0.3 : 0.2 }}
+           animate={{ opacity: layoutStyle === 'brutalist' ? 0.4 : layoutStyle === 'neo' ? 0.3 : layoutStyle === 'swiss' ? 1 : 0.2 }}
            exit={{ opacity: 0 }}
+           transition={{ duration: 1 }}
            className="absolute inset-0 pointer-events-none"
         >
           <img
             src={currentMovie.backdropUrl || currentMovie.posterUrl}
-            className={`w-full h-full object-cover ${layoutStyle === 'neo' ? 'blur-[120px]' : 'blur-[80px] brightness-50'}`}
+            className={`w-full h-full object-cover ${layoutStyle === 'neo' ? 'blur-[120px] scale-110' : layoutStyle === 'brutalist' ? 'blur-[40px] grayscale brightness-50 scale-105' : 'grayscale brightness-[0.4] object-center transition-all duration-[30000ms] ease-out scale-[1.15]'}`}
             alt=""
             referrerPolicy="no-referrer"
           />
           {layoutStyle !== 'neo' && (
-            <div className="absolute inset-0 bg-gradient-to-t from-cinema-ink via-transparent to-cinema-ink" />
+            <div className={`absolute inset-0 ${layoutStyle === 'swiss' ? 'bg-gradient-to-t from-cinema-ink via-cinema-ink/10 to-transparent' : 'bg-gradient-to-t from-cinema-ink via-transparent to-cinema-ink'}`} />
           )}
         </motion.div>
       </AnimatePresence>
 
       <div className={`w-full h-full relative z-10 flex flex-col items-center justify-center px-4 md:px-12`}>
         
-        {/* Layout 1: SWISS (Modernist, Clean) */}
+        {/* Layout 1: SWISS (Modernist, Clean, Immersive) */}
         {layoutStyle === 'swiss' && (
-          <div className="w-full max-w-[1920px] space-y-12">
-            <div className="relative group aspect-[16/9] md:aspect-[21/9] overflow-hidden shadow-[0_50px_100px_-30px_rgba(0,0,0,0.9)] cursor-pointer" onClick={() => onClick(currentMovie)}>
-               <AnimatePresence mode="wait">
-                 <motion.img
-                   key={`swiss-hero-${currentMovie.id}`}
-                   initial={{ scale: 1.1, opacity: 0 }}
-                   animate={{ scale: 1, opacity: 1 }}
-                   exit={{ scale: 0.95, opacity: 0 }}
-                   transition={{ duration: 1.5 }}
-                   src={currentMovie.backdropUrl || currentMovie.posterUrl}
-                   className="w-full h-full object-cover grayscale transition-all duration-[2000ms] group-hover:grayscale-0"
-                   referrerPolicy="no-referrer"
-                 />
-               </AnimatePresence>
-               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8 md:p-20">
-                  <h2 className="text-5xl md:text-[8rem] lg:text-[10rem] font-black leading-none text-white tracking-tighter italic">
-                    {currentMovie.title}
-                  </h2>
+          <div className="w-full max-w-[1920px] h-full flex flex-col justify-end pb-24 md:pb-32 relative z-10 space-y-12 cursor-pointer group" onClick={() => onClick(currentMovie)}>
+             <div className="flex flex-col md:flex-row justify-between md:items-end gap-12 relative z-20">
+               <div className="space-y-6">
+                 <motion.div 
+                   initial={{ opacity: 0, y: 30 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                   className="overflow-hidden"
+                 >
+                   <h2 className={`font-black leading-[0.9] text-white tracking-tighter uppercase group-hover:scale-[1.02] transition-transform duration-1000 origin-left drop-shadow-2xl break-words ${
+                     currentMovie.title.length > 20 ? 'text-4xl sm:text-5xl md:text-[5rem] lg:text-[6rem]' : 
+                     currentMovie.title.length > 10 ? 'text-5xl sm:text-7xl md:text-[6rem] lg:text-[8rem]' : 
+                     'text-7xl sm:text-8xl md:text-[10rem] lg:text-[12rem]'
+                   }`}>
+                     {currentMovie.title}
+                   </h2>
+                 </motion.div>
+                 <motion.div 
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   transition={{ delay: 0.6, duration: 1 }}
+                   className="flex items-center space-x-6 text-white/80"
+                 >
+                   <p className="text-3xl md:text-5xl font-black italic mix-blend-screen">{currentMovie.director}</p>
+                   <div className="w-16 h-px bg-white/40" />
+                   <p className="text-3xl md:text-5xl font-mono opacity-80">{currentMovie.year}</p>
+                 </motion.div>
                </div>
-            </div>
-            <div className="flex flex-col md:flex-row justify-between items-end border-t border-white/10 pt-8 gap-8">
-               <div className="space-y-1">
-                 <span className="text-[10px] font-mono font-black uppercase tracking-[0.5em] text-lavender">Archive No. 0{index + 1}</span>
-                 <p className="text-2xl font-black text-white italic">{currentMovie.director}, {currentMovie.year}</p>
-               </div>
-               <div className="flex gap-4" key={`hero-tags-container-${currentMovie.id}`}>
-                 {currentMovie.moodTags?.slice(0, 3).map((tag, i) => (
-                   <span key={`hero-tag-${currentMovie.id}-${i}`} className="text-[10px] font-bold uppercase text-white/40 border border-white/10 px-4 py-2">{tag}</span>
-                 ))}
-               </div>
-            </div>
+               
+               <motion.div 
+                 initial={{ opacity: 0, x: 20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 transition={{ delay: 0.8, duration: 1 }}
+                 className="flex flex-col md:items-end gap-6"
+               >
+                 <span className="text-[10px] md:text-xs font-mono font-black uppercase tracking-[0.5em] text-lavender">Archive / {String(index + 1).padStart(2, '0')}</span>
+                 <div className="flex flex-wrap gap-2 md:justify-end">
+                   {currentMovie.moodTags?.slice(0, 3).map((tag, i) => (
+                     <span key={`hero-tag-${currentMovie.id}-${i}`} className="text-xs font-bold uppercase text-white/70 bg-white/5 border border-white/20 backdrop-blur-md px-5 py-2.5 rounded-full shadow-lg hover:bg-white hover:text-cinema-ink transition-colors">{tag}</span>
+                   ))}
+                 </div>
+               </motion.div>
+             </div>
           </div>
         )}
 
         {/* Layout 2: BRUTALIST (Grid, Raw, Bold) */}
         {layoutStyle === 'brutalist' && (
           <div className="w-full h-full p-4 md:p-8 flex items-center justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-12 w-full max-w-7xl border-4 border-cinema-ink shadow-[16px_16px_0px_#1A1A1A] bg-white overflow-hidden">
-               <div className="md:col-span-7 aspect-video md:aspect-auto relative group overflow-hidden cursor-pointer" onClick={() => onClick(currentMovie)}>
+            <div className="grid grid-cols-1 md:grid-cols-12 w-full max-w-7xl border-8 border-cinema-ink shadow-[24px_24px_0px_var(--color-cinema-ink)] bg-yellow-400 overflow-hidden relative group" onClick={() => onClick(currentMovie)}>
+               <div className="md:col-span-7 aspect-[4/3] md:aspect-auto relative overflow-hidden cursor-pointer border-b-8 md:border-b-0 md:border-r-8 border-cinema-ink">
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={`brutal-hero-${currentMovie.id}`}
-                      initial={{ opacity: 0, x: -50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 50 }}
+                      initial={{ opacity: 0, scale: 1.15 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.8, ease: "circOut" }}
                       src={currentMovie.backdropUrl || currentMovie.posterUrl}
-                      className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 transition-all"
+                      className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700"
                       referrerPolicy="no-referrer"
                     />
                   </AnimatePresence>
-                  <div className="absolute top-0 left-0 bg-cinema-ink text-white p-4 font-mono font-black text-3xl">0{index + 1}</div>
+                  <div className="absolute top-0 left-0 bg-cinema-ink text-yellow-400 px-6 py-4 font-mono font-black text-4xl border-b-8 border-r-8 border-cinema-ink z-10">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
                </div>
-               <div className="md:col-span-5 p-8 md:p-12 flex flex-col justify-between bg-lavender border-l-4 border-cinema-ink">
-                  <div className="space-y-6">
-                    <h2 className="text-6xl md:text-8xl font-black uppercase leading-none tracking-tight break-words">
+               <div className="md:col-span-5 p-8 md:p-12 lg:p-16 flex flex-col justify-between bg-zinc-100 relative overflow-hidden group-hover:bg-yellow-400 transition-colors duration-500 cursor-pointer">
+                  <div className="absolute -right-20 -bottom-20 text-[15rem] font-black opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none -rotate-12 leading-none">
+                     {currentMovie.year}
+                  </div>
+                  <div className="space-y-8 relative z-10">
+                    <h2 className={`font-black uppercase leading-[0.9] tracking-tight break-words group-hover:-rotate-2 transition-transform origin-left ${
+                      currentMovie.title.length > 20 ? 'text-4xl md:text-5xl lg:text-5xl' :
+                      currentMovie.title.length > 10 ? 'text-5xl md:text-6xl lg:text-6xl' :
+                      'text-6xl md:text-7xl lg:text-8xl'
+                    }`}>
                       {currentMovie.title}
                     </h2>
-                    <div className="text-xl font-mono font-bold uppercase underline">Directed by {currentMovie.director}</div>
+                    <div className="text-xl md:text-2xl font-mono font-bold uppercase underline decoration-4 underline-offset-8">Dir. {currentMovie.director}</div>
                   </div>
                   <button 
-                    onClick={() => onClick(currentMovie)}
-                    className="mt-12 w-full py-6 bg-cinema-ink text-white font-mono font-black uppercase text-2xl hover:bg-white hover:text-cinema-ink transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[6px_6px_0px_rgba(0,0,0,0.3)]"
+                    className="mt-16 w-full py-6 md:py-8 bg-cinema-ink text-white font-mono font-black uppercase text-2xl lg:text-4xl group-hover:bg-white group-hover:text-cinema-ink transition-all active:translate-x-2 active:translate-y-2 active:shadow-none shadow-[12px_12px_0px_rgba(0,0,0,0.5)] border-4 border-transparent group-hover:border-cinema-ink"
                   >
-                    Entry Detail _
+                    ENTER _
                   </button>
                </div>
             </div>
@@ -194,12 +216,13 @@ const CinemaHero: React.FC<{ movies: Movie[]; onClick: (m: Movie) => void; layou
         {layoutStyle === 'neo' && (
           <motion.div 
             key={`neo-hero-${currentMovie.id}`}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-8 md:gap-16"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full max-w-7xl flex flex-col md:flex-row items-center gap-12 md:gap-20 relative z-20"
           >
             <div 
-              className="w-full md:w-[45%] aspect-[3/4] rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] cursor-pointer group"
+              className="w-full sm:w-2/3 md:w-[45%] aspect-[3/4] rounded-[4rem] overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.2)] cursor-pointer group relative"
               onClick={() => onClick(currentMovie)}
             >
               <img 
@@ -207,27 +230,35 @@ const CinemaHero: React.FC<{ movies: Movie[]; onClick: (m: Movie) => void; layou
                 className="w-full h-full object-cover transition-transform duration-[3000ms] group-hover:scale-110"
                 referrerPolicy="no-referrer"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-cinema-ink/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
             </div>
-            <div className="w-full md:w-[55%] space-y-10 text-center md:text-left">
-               <div className="space-y-4">
+            <div className="w-full md:w-[55%] space-y-10 md:space-y-12 text-center md:text-left">
+               <div className="space-y-6">
                  <motion.span 
-                   className="inline-block px-4 py-2 bg-lavender/10 text-lavender rounded-full text-xs font-black uppercase tracking-widest"
-                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                   className="inline-block px-5 py-2.5 bg-white/60 backdrop-blur-lg text-cinema-ink rounded-full text-xs font-black uppercase tracking-[0.3em] shadow-sm border border-white/50"
+                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                  >
-                   Featured Vision
+                   Featured Release
                  </motion.span>
-                 <h2 className="text-5xl md:text-8xl font-black tracking-tight leading-tight text-cinema-ink">
+                 <h2 className={`font-black tracking-tighter leading-[1] text-cinema-ink break-words ${
+                   currentMovie.title.length > 20 ? 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl' :
+                   currentMovie.title.length > 10 ? 'text-4xl sm:text-5xl md:text-6xl lg:text-[5rem]' :
+                   'text-5xl sm:text-7xl md:text-8xl lg:text-[7rem]'
+                 }`}>
                    {currentMovie.title}
                  </h2>
-                 <p className="text-2xl font-medium text-cinema-ink/40 tracking-tight">{currentMovie.director} / {currentMovie.year}</p>
+                 <p className="text-2xl md:text-4xl font-serif italic text-cinema-ink/50 tracking-tight">{currentMovie.director} — {currentMovie.year}</p>
                </div>
-               <button 
+               <motion.button 
+                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
                  onClick={() => onClick(currentMovie)}
-                 className="inline-flex items-center space-x-4 bg-cinema-ink text-white px-10 py-5 rounded-full font-black uppercase tracking-widest hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all"
+                 className="inline-flex items-center space-x-6 bg-cinema-ink text-white px-10 md:px-12 py-5 md:py-6 rounded-full font-black uppercase tracking-widest hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:-translate-y-2 transition-all duration-300 group shadow-xl"
                >
-                 <span>Explore Detail</span>
-                 <ArrowRight />
-               </button>
+                 <span className="text-lg md:text-xl">Discover</span>
+                 <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center group-hover:translate-x-2 transition-transform">
+                   <ArrowRight size={20} />
+                 </div>
+               </motion.button>
             </div>
           </motion.div>
         )}

@@ -111,7 +111,7 @@ export const DoubanSync: React.FC<DoubanSyncProps> = ({ onClose, onImport, exist
         <div className="p-4 md:p-6 border-b-2 border-cinema-ink flex items-center justify-between bg-zinc-50">
           <div className="flex items-center space-x-3">
              <div className="p-2 bg-cinema-ink text-white shrink-0">
-                <Database size={18} md:size={20} />
+                <Database className="w-[18px] h-[18px] md:w-5 md:h-5" />
              </div>
              <div>
                 <h2 className="text-lg md:text-xl font-black uppercase tracking-tighter">Douban Data Intercept</h2>
@@ -119,7 +119,7 @@ export const DoubanSync: React.FC<DoubanSyncProps> = ({ onClose, onImport, exist
              </div>
           </div>
           <button onClick={onClose} className="hover:rotate-90 transition-transform p-1">
-            <X size={20} md:size={24} />
+            <X className="w-5 h-5 md:w-6 md:h-6" />
           </button>
         </div>
 

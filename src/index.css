@@ -6,20 +6,29 @@
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-lavender: #E6E6FA;
-  --color-thistle: #D8BFD8;
-  --color-cinema-bg: #FDFDFD;
-  --color-cinema-ink: #1A1A1A;
+  /* Overriding core colors to shift away from black/white */
+  --color-white: #F9F6F0; /* Warm paper / cream */
+  --color-black: #2C221F; /* Deep espresso */
+  --color-zinc-50: #F3EBE1;
+  --color-zinc-100: #E8DAC8;
+  --color-yellow-400: #D86B52; /* Terracotta / Rust */
+  --color-zinc-900: #2C221F;
+
+  /* Theme specific variables */
+  --color-lavender: #8CB3A3; /* Soft sage green instead of lavender */
+  --color-thistle: #E4C077;  /* Muted gold */
+  --color-cinema-bg: var(--color-white);
+  --color-cinema-ink: #223026; /* Deep forest green / dark pine */
 }
 
 @layer base {
   body {
-    @apply bg-cinema-bg text-cinema-ink font-sans antialiased transition-all duration-500;
+    @apply bg-cinema-bg text-cinema-ink font-sans antialiased transition-colors duration-1000;
   }
 
   /* Style: Swiss (Clean, Modernist) */
   .style-swiss {
-    --style-border: 1px solid rgba(26, 26, 26, 0.1);
+    --style-border: 1px solid color-mix(in srgb, var(--color-cinema-ink) 10%, transparent);
     --style-radius: 0px;
     --style-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   }
@@ -27,9 +36,9 @@
   /* Style: Brutalist (Raw, Technical) */
   .style-brutalist {
     @apply font-mono;
-    --style-border: 2px solid #1A1A1A;
+    --style-border: 2px solid var(--color-cinema-ink);
     --style-radius: 0px;
-    --style-shadow: 6px 6px 0px #1A1A1A;
+    --style-shadow: 6px 6px 0px var(--color-cinema-ink);
   }
 
   /* Style: Neo (Soft, Organic) */

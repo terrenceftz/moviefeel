@@ -57,7 +57,7 @@ const MovieParallaxItem: React.FC<{
             >
                 <div className={`overflow-hidden shadow-2xl relative ${
                     layoutStyle === 'neo' ? 'rounded-[2rem]' : 
-                    layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[20px_20px_0_rgba(0,0,0,1)]' :
+                    layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[20px_20px_0_var(--color-cinema-ink)]' :
                     'border border-white/10'
                 }`}>
                     <img 
@@ -90,7 +90,7 @@ const MovieParallaxItem: React.FC<{
             <motion.div 
                 className={`max-w-md p-8 md:p-12 shadow-2xl ${
                     layoutStyle === 'neo' ? 'bg-white/80 backdrop-blur-xl rounded-[2rem]' : 
-                    layoutStyle === 'brutalist' ? 'bg-yellow-400 border-4 border-cinema-ink shadow-[12px_12px_0_rgba(0,0,0,1)]' :
+                    layoutStyle === 'brutalist' ? 'bg-yellow-400 border-4 border-cinema-ink shadow-[12px_12px_0_var(--color-cinema-ink)]' :
                     'bg-white'
                 }`}
             >

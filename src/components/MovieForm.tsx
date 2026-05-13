@@ -27,6 +27,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
     userComment: '',
     quote: '',
     genre: [],
+    cast: [],
     viewingDate: new Date().toISOString().split('T')[0],
   });
 
@@ -68,6 +69,8 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
         overview: details.overview,
         tmdbRating: Math.round(details.tmdbRating * 10) / 10,
         genre: details.genre,
+        cast: details.cast,
+        runtime: details.runtime,
       }));
     }
     setLoading(false);
@@ -159,7 +162,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest">上映年份</label>
               <input 
@@ -167,6 +170,15 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
                 className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2"
                 value={movie.year || ''}
                 onChange={e => setMovie({...movie, year: parseInt(e.target.value) || 0})}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest">时长 (分钟)</label>
+              <input 
+                type="number"
+                className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2"
+                value={movie.runtime || ''}
+                onChange={e => setMovie({...movie, runtime: parseInt(e.target.value) || undefined})}
               />
             </div>
             <div className="space-y-1">
@@ -218,13 +230,24 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest">类型 (逗号分隔)</label>
-            <input 
-              className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-sm"
-              value={movie.genre?.join(', ') || ''}
-              onChange={e => setMovie({...movie, genre: e.target.value.split(',').map(s => s.trim())})}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest">类型 (逗号分隔)</label>
+              <input 
+                className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-sm"
+                value={movie.genre?.join(', ') || ''}
+                onChange={e => setMovie({...movie, genre: e.target.value.split(',').map(s => s.trim())})}
+              />
+            </div>
+            
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest">演员 (逗号分隔)</label>
+              <input 
+                className="w-full border-b-2 border-cinema-ink/10 focus:border-cinema-ink outline-none p-2 text-sm"
+                value={movie.cast?.join(', ') || ''}
+                onChange={e => setMovie({...movie, cast: e.target.value.split(',').map(s => s.trim())})}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-[9px] font-mono opacity-40 uppercase tracking-widest bg-zinc-50 p-4 border border-cinema-ink/5">

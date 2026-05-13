@@ -6,6 +6,7 @@ import { GridGallery } from './components/GridGallery';
 import { Timeline } from './components/Timeline';
 import { WatchlistView } from './components/WatchlistView';
 import { ArchiveParallaxView } from './components/ArchiveParallaxView';
+import { SummaryParallaxView } from './components/SummaryParallaxView';
 import { Footer } from './components/Footer';
 import { MovieDetail } from './components/MovieDetail';
 import { MovieForm } from './components/MovieForm';
@@ -273,7 +274,7 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <MovieSummary movies={watchedMovies} />
+              <SummaryParallaxView movies={watchedMovies} layoutStyle={layoutStyle} />
             </motion.div>
           )}
         </AnimatePresence>

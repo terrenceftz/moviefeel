@@ -86,7 +86,7 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
                     }}
                     className={`flex items-center space-x-2 text-[10px] md:text-xs font-bold uppercase tracking-widest p-3 transition-all ${
                       layoutStyle === 'neo' ? 'bg-red-50 text-red-600 rounded-full shadow-lg' : 'bg-red-600 text-white'
-                    } ${layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[8px_8px_0_#1A1A1A]' : (layoutStyle === 'swiss' ? 'border-2 border-cinema-ink' : '')}`}
+                    } ${layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[8px_8px_0_var(--color-cinema-ink)]' : (layoutStyle === 'swiss' ? 'border-2 border-cinema-ink' : '')}`}
                     title="彻底删除此条目"
                 >
                     <Trash2 size={14} />
@@ -129,11 +129,27 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
         {/* Right Column: Content */}
         <div className={`w-full md:w-[60%] p-6 md:p-24 space-y-12 md:space-y-16 ${layoutStyle === 'neo' ? 'md:py-32' : ''}`}>
           <section className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
                <span className={`text-[10px] font-mono font-black uppercase tracking-[0.4em] ${layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-2 py-1' : 'opacity-40'}`}>
-                 Directed by {movie.director}
+                 Dir. {movie.director}
                </span>
-               <div className="hidden sm:block h-px flex-1 bg-cinema-ink/10" />
+               {movie.runtime && (
+                 <>
+                   <span className="hidden sm:inline text-cinema-ink/20">•</span>
+                   <span className={`text-[10px] font-mono font-black uppercase tracking-[0.4em] ${layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-2 py-1' : 'opacity-40'}`}>
+                     {movie.runtime} min
+                   </span>
+                 </>
+               )}
+               {movie.cast && movie.cast.length > 0 && (
+                 <>
+                   <span className="hidden sm:inline text-cinema-ink/20">•</span>
+                   <span className={`text-[10px] font-mono font-bold uppercase tracking-[0.1em] ${layoutStyle === 'brutalist' ? 'bg-zinc-100 border border-cinema-ink px-2 py-1' : 'opacity-60'}`}>
+                     Cast. {movie.cast.join(', ')}
+                   </span>
+                 </>
+               )}
+               <div className="hidden lg:block h-px flex-1 bg-cinema-ink/10 min-w-[50px]" />
                <div className={`flex items-center self-start text-xs font-bold px-4 py-2 ${
                  layoutStyle === 'neo' ? 'bg-white rounded-full shadow-sm' : 'bg-zinc-100 border border-cinema-ink/5'
                }`}>
@@ -150,9 +166,9 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
             
             <div className="flex flex-col sm:flex-row sm:items-center gap-8 pt-6">
                <div className={`flex items-center text-2xl md:text-4xl font-black px-6 py-4 transition-all ${
-                 layoutStyle === 'brutalist' ? 'bg-yellow-400 border-4 border-cinema-ink shadow-[12px_12px_0_#1A1A1A]' : 
+                 layoutStyle === 'brutalist' ? 'bg-yellow-400 border-4 border-cinema-ink shadow-[12px_12px_0_var(--color-cinema-ink)]' : 
                  layoutStyle === 'neo' ? 'bg-white text-cinema-ink rounded-[2rem] shadow-xl' :
-                 'bg-lavender shadow-[8px_8px_0_#1A1A1A] italic'
+                 'bg-lavender shadow-[8px_8px_0_var(--color-cinema-ink)] italic'
                }`}>
                   <span className="text-[10px] font-mono uppercase tracking-widest mr-6 opacity-40">User Score</span>
                   {movie.userRating}
@@ -165,9 +181,18 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
             </div>
 
             <div className="flex flex-wrap gap-3 pt-6" key={`detail-tags-container-${movie.id}`}>
+                {movie.genre?.map((g, i) => (
+                  <span key={`detail-genre-${movie.id}-${i}-${layoutStyle}`} className={`text-[10px] font-black px-5 py-2 uppercase tracking-widest transition-all ${
+                    layoutStyle === 'neo' ? 'bg-white text-cinema-ink shadow-sm rounded-full' : 
+                    layoutStyle === 'brutalist' ? 'bg-white border-2 border-cinema-ink shadow-[4px_4px_0_var(--color-cinema-ink)]' :
+                    'bg-cinema-ink/5'
+                  }`}>
+                    {g}
+                  </span>
+                ))}
                 {movie.moodTags?.map((tag, i) => (
                 <span key={`detail-tag-${movie.id}-${i}-${layoutStyle}`} className={`text-[10px] font-black px-5 py-2 uppercase tracking-widest transition-all ${
-                  layoutStyle === 'neo' ? 'bg-lavender/10 text-lavender rounded-full' : 
+                  layoutStyle === 'neo' ? 'bg-lavender/20 text-cinema-ink rounded-full' : 
                   layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white' :
                   'border border-cinema-ink/20'
                 }`}>
@@ -184,7 +209,7 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
             viewport={{ once: true }}
             className={`aspect-video w-full overflow-hidden transition-all duration-1000 grayscale group hover:grayscale-0 ${
               layoutStyle === 'neo' ? 'rounded-[3rem] shadow-2xl' : 
-              layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[12px_12px_0_#1A1A1A]' :
+              layoutStyle === 'brutalist' ? 'border-4 border-cinema-ink shadow-[12px_12px_0_var(--color-cinema-ink)]' :
               'shadow-2xl border border-cinema-ink/10'
             }`}
           >
@@ -199,7 +224,7 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
           {/* Quote Section */}
           <section className={`relative py-8 md:py-16 px-8 md:px-12 transition-all ${
             layoutStyle === 'neo' ? 'bg-white rounded-[3rem] shadow-sm' : 
-            layoutStyle === 'brutalist' ? 'bg-zinc-100 border-4 border-cinema-ink shadow-[8px_8px_0_#1A1A1A]' : ''
+            layoutStyle === 'brutalist' ? 'bg-zinc-100 border-4 border-cinema-ink shadow-[8px_8px_0_var(--color-cinema-ink)]' : ''
           }`}>
             <Quote className={`absolute -top-4 -left-4 w-12 h-12 md:w-20 md:h-20 ${
               layoutStyle === 'neo' ? 'text-lavender/20' : 'text-lavender/40'
@@ -247,16 +272,16 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
                 </h4>
                 <div className={`h-[350px] md:h-[450px] w-full p-8 transition-all ${
                   layoutStyle === 'neo' ? 'bg-white rounded-[3rem] shadow-xl' : 
-                  layoutStyle === 'brutalist' ? 'bg-white border-4 border-cinema-ink shadow-[12px_12px_0_#1A1A1A]' :
+                  layoutStyle === 'brutalist' ? 'bg-white border-4 border-cinema-ink shadow-[12px_12px_0_var(--color-cinema-ink)]' :
                   'bg-white/40 shadow-inner border border-cinema-ink/5'
                 }`}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart key={`radar-${movie.id}`} cx="50%" cy="50%" outerRadius="80%" data={movie.emotionalProfile}>
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={movie.emotionalProfile}>
                       <PolarGrid stroke="#eee" />
                       <PolarAngleAxis dataKey="label" tick={(props: any) => {
                         const { x, y, payload } = props;
                         return (
-                          <text x={x} y={y} textAnchor="middle" fontSize={10} fontWeight={900} fill="#1A1A1A" className="uppercase font-mono">
+                          <text x={x} y={y} textAnchor="middle" fontSize={10} fontWeight={900} fill="var(--color-cinema-ink)" className="uppercase font-mono">
                             {payload.value}
                           </text>
                         );

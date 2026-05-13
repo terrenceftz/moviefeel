@@ -74,10 +74,14 @@ export async function getMovieDetails(tmdbId: number, type: 'movie' | 'tv' = 'mo
       ? (details.release_date ? new Date(details.release_date).getFullYear() : 0)
       : (details.first_air_date ? new Date(details.first_air_date).getFullYear() : 0);
 
+    const cast = creditsData.cast?.slice(0, 5).map((c: any) => c.name) || [];
+
     return {
       title: details.title || details.name,
       director: director,
+      cast: cast,
       year: year,
+      runtime: details.runtime || (details.episode_run_time ? details.episode_run_time[0] : undefined),
       posterUrl: details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : '',
       backdropUrl: details.backdrop_path ? `https://image.tmdb.org/t/p/original${details.backdrop_path}` : '',
       overview: details.overview,
