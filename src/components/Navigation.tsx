@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Movie, ViewMode } from '../types';
-import { Film, Calendar, LayoutGrid, ListFilter, Plus, LogOut, User, RefreshCw, BarChart3, Menu, X } from 'lucide-react';
+import { Film, Calendar, LayoutGrid, ListFilter, Plus, LogOut, User, RefreshCw, BarChart3, Menu, X, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface NavigationProps {
@@ -114,12 +114,19 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             {isAuthenticated && (
               <>
-                <button 
+                <button
                   onClick={onSync}
                   className={`hidden md:flex w-8 h-8 md:w-10 md:h-10 border border-cinema-ink items-center justify-center hover:bg-lavender transition-colors ${btnClasses[layoutStyle]}`}
                   title="同步豆瓣"
                 >
                   <RefreshCw size={14} />
+                </button>
+                <button
+                  onClick={() => setView('settings')}
+                  className={`hidden md:flex w-8 h-8 md:w-10 md:h-10 border border-cinema-ink items-center justify-center hover:bg-lavender transition-colors ${btnClasses[layoutStyle]}`}
+                  title="设置"
+                >
+                  <Settings size={14} />
                 </button>
                 <button 
                   onClick={onLogout}
@@ -204,23 +211,33 @@ export const Navigation: React.FC<NavigationProps> = ({
               {isAuthenticated && (
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-cinema-ink/40 ml-2">Management 管理</span>
-                  <div className="flex gap-2">
-                    <button 
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
                       onClick={() => {
                         onSync();
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`flex-1 flex items-center justify-center space-x-2 p-3 bg-lavender border border-cinema-ink text-cinema-ink transition-colors ${btnClasses[layoutStyle]}`}
+                      className={`flex items-center justify-center space-x-2 p-3 bg-lavender border border-cinema-ink text-cinema-ink transition-colors ${btnClasses[layoutStyle]}`}
                     >
                       <RefreshCw size={14} />
                       <span className="text-xs font-bold">同步豆瓣</span>
                     </button>
-                    <button 
+                    <button
+                      onClick={() => {
+                        setView('settings');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`flex items-center justify-center space-x-2 p-3 bg-zinc-200 border border-cinema-ink text-cinema-ink transition-colors ${btnClasses[layoutStyle]}`}
+                    >
+                      <Settings size={14} />
+                      <span className="text-xs font-bold">系统设置</span>
+                    </button>
+                    <button
                       onClick={() => {
                         onLogout();
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`flex-1 flex items-center justify-center space-x-2 p-3 bg-zinc-200 border border-cinema-ink text-cinema-ink transition-colors ${btnClasses[layoutStyle]}`}
+                      className={`flex items-center justify-center space-x-2 p-3 bg-zinc-200 border border-cinema-ink text-cinema-ink transition-colors ${btnClasses[layoutStyle]}`}
                     >
                       <LogOut size={14} />
                       <span className="text-xs font-bold">退出登录</span>

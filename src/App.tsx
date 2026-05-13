@@ -12,6 +12,7 @@ import { MovieDetail } from './components/MovieDetail';
 import { MovieForm } from './components/MovieForm';
 import { LoginForm } from './components/LoginForm';
 import { DoubanSync } from './components/DoubanSync';
+import { SettingsPanel } from './components/SettingsPanel';
 import { MovieSummary } from './components/GenreHeatmap';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
@@ -275,6 +276,18 @@ export default function App() {
               transition={{ duration: 0.5 }}
             >
               <SummaryParallaxView movies={watchedMovies} layoutStyle={layoutStyle} />
+            </motion.div>
+          )}
+
+          {viewMode === 'settings' && (
+            <motion.div
+              key="settings"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <SettingsPanel layoutStyle={layoutStyle} />
             </motion.div>
           )}
         </AnimatePresence>

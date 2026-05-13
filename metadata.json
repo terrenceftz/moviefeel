@@ -1,9 +1,9 @@
 {
   "name": "Cinema Archive",
-  "description": "A high-aesthetic movie viewing record system with Swiss Modernism design and AI-driven cinematography insights.",
+  "description": "A high-aesthetic movie viewing record system with Swiss Modernism design and TMDB integration.",
   "requestFramePermissions": [],
   "majorCapabilities": [
-    "AI_METADATA_ENHANCEMENT",
-    "CINEMATIC_DATA_VISUALIZATION"
+    "CINEMATIC_DATA_VISUALIZATION",
+    "TMDB_METADATA_ENRICHMENT"
   ]
 }

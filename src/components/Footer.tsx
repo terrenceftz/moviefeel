@@ -80,7 +80,7 @@ export const Footer: React.FC<FooterProps> = ({ layoutStyle = 'swiss' }) => {
 
       <div className="max-w-7xl mx-auto pt-12 md:pt-24 mt-12 md:mt-24 border-t border-current opacity-10 flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] font-mono uppercase tracking-[0.3em]">
         <span>© 2024 Cinema.Archive — Digital Preservation Unit</span>
-        <span>Built with Antigravity AI Engine</span>
+        <span>Powered by TMDB & Cinema Archive</span>
       </div>
     </footer>
   );

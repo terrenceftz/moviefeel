@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Movie } from '../types';
 import { X, Loader2, Search } from 'lucide-react';
-import { enhanceMovieMetadata } from '../services/geminiService';
+import { enhanceMovieMetadata } from '../services/metadataService';
 import { searchMovies, getMovieDetails, TMDBMovie } from '../services/tmdbService';
 
 interface MovieFormProps {
@@ -212,7 +212,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest">经典金句台词 (AI 自动捕捉或手动输入)</label>
+            <label className="text-[10px] font-bold uppercase tracking-widest">经典金句台词 (手动输入)</label>
             <textarea 
               className="w-full min-h-[60px] border border-cinema-ink/10 focus:border-cinema-ink outline-none p-4 font-sans text-sm resize-none italic bg-zinc-50"
               value={movie.quote || ''}
@@ -296,7 +296,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSave, onClose, initialMo
             disabled={loading}
             className="w-full bg-cinema-ink text-white py-4 font-black uppercase tracking-widest hover:bg-lavender hover:text-cinema-ink transition-all disabled:opacity-50 disabled:cursor-wait flex items-center justify-center space-x-2"
           >
-            {loading ? <><Loader2 className="animate-spin" /> <span>AI 正在捕捉电影质感...</span></> : <span>保存记录</span>}
+            {loading ? <><Loader2 className="animate-spin" /> <span>正在生成电影元数据...</span></> : <span>保存记录</span>}
           </button>
         </form>
       </div>
