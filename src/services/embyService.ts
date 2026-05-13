@@ -19,7 +19,7 @@ export async function fetchRecentItems(): Promise<EmbyItem[]> {
   const config = getEmbyConfig();
   if (!config) return [];
 
-  const embyUrl = `${config.serverUrl}/emby/Items?SortBy=DateCreated&SortOrder=Descending&IncludeItemTypes=Movie,Series&Recursive=true&Limit=20&api_key=${config.apiToken}`;
+  const embyUrl = `${config.serverUrl}/emby/Items?SortBy=DateCreated&SortOrder=Descending&IncludeItemTypes=Movie,Series&Recursive=true&Limit=5&api_key=${config.apiToken}`;
 
   try {
     const resp = await fetch(`/api/emby-proxy?url=${encodeURIComponent(embyUrl)}`);
