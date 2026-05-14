@@ -50,6 +50,10 @@ export const SummaryParallaxView: React.FC<SummaryParallaxViewProps> = ({ movies
     
     const favorites = movies.filter(m => m.isFavorite).sort((a, b) => b.userRating - a.userRating);
 
+    const longestReviewMovie = movies
+      .filter(m => m.userComment && m.userComment.trim().length > 0)
+      .sort((a, b) => (b.userComment?.length || 0) - (a.userComment?.length || 0))[0];
+
     return {
       totalCount,
       totalHours: Math.round(totalRuntime / 60),
@@ -57,7 +61,10 @@ export const SummaryParallaxView: React.FC<SummaryParallaxViewProps> = ({ movies
       topDirector: topDirector[0],
       topGenre: topGenre[0],
       topActor: topActor[0],
-      favorites: favorites.slice(0, 3)
+      favorites: favorites.slice(0, 3),
+      longestReview: longestReviewMovie
+        ? { title: longestReviewMovie.title, count: longestReviewMovie.userComment!.length }
+        : null
     };
   }, [movies]);
 
@@ -147,11 +154,12 @@ export const SummaryParallaxView: React.FC<SummaryParallaxViewProps> = ({ movies
                偏好与品味 <span className="text-xl md:text-3xl italic serif-italic opacity-30 block md:inline md:ml-6">Signature Preferences</span>
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                {[
                  { title: 'Top Director', desc: '最常看导演', name: stats.topDirector },
                  { title: 'Top Genre', desc: '偏爱类型', name: stats.topGenre },
                  { title: 'Top Actor', desc: '常看演员', name: stats.topActor },
+                 { title: 'Longest Review', desc: '最长评论', name: stats.longestReview?.title || '—', extra: stats.longestReview ? `${stats.longestReview.count} 字` : undefined },
                ].map((pref, i) => (
                  <motion.div 
                    key={i}
@@ -175,6 +183,9 @@ export const SummaryParallaxView: React.FC<SummaryParallaxViewProps> = ({ movies
                        <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none break-words">
                          {pref.name}
                        </h3>
+                       {pref.extra && (
+                         <p className="text-sm font-mono opacity-40">{pref.extra}</p>
+                       )}
                     </div>
                  </motion.div>
                ))}
