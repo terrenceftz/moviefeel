@@ -2,7 +2,6 @@ import React from 'react';
 import { Movie } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Star, Quote, ArrowLeft, Edit2, Trash2 } from 'lucide-react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 interface MovieDetailProps {
   movie: Movie;
@@ -237,65 +236,29 @@ export const MovieDetail: React.FC<MovieDetailProps> = ({
           </section>
 
           {/* Review Section */}
-          <section className={`grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-24 pt-12 md:pt-20 border-t ${
+          <section className={`pt-12 md:pt-20 border-t ${
             layoutStyle === 'brutalist' ? 'border-cinema-ink border-t-8' : 'border-cinema-ink/5'
           }`}>
-            <div className="space-y-12">
-              <div className="space-y-8">
-                <h4 className={`text-[10px] font-black tracking-[0.4em] uppercase ${
-                  layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-3 py-1 inline-block' : 'text-cinema-ink/30'
-                }`}>
-                  Personal Narrative
-                </h4>
-                <p className={`text-xl md:text-2xl leading-relaxed text-cinema-ink/80 whitespace-pre-wrap italic font-serif ${
-                  layoutStyle === 'brutalist' ? 'font-mono not-italic' : ''
-                }`}>
-                  {movie.userComment || "该记录没有留下评价。"}
-                </p>
-                <div className="h-[2px] w-12 bg-lavender" />
-              </div>
+            <div className="space-y-8">
+              <h4 className={`text-[10px] font-black tracking-[0.4em] uppercase ${
+                layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-3 py-1 inline-block' : 'text-cinema-ink/30'
+              }`}>
+                Personal Narrative
+              </h4>
+              <p className={`text-xl md:text-2xl leading-relaxed text-cinema-ink/80 whitespace-pre-wrap italic font-serif ${
+                layoutStyle === 'brutalist' ? 'font-mono not-italic' : ''
+              }`}>
+                {movie.userComment || "该记录没有留下评价。"}
+              </p>
+              <div className="h-[2px] w-12 bg-lavender" />
+            </div>
 
-              <div className="space-y-6 opacity-60">
+            {movie.overview && (
+              <div className="space-y-6 mt-12 opacity-60">
                 <h4 className="text-[10px] font-black tracking-[0.4em] uppercase text-cinema-ink/40">Movie Synopsis</h4>
                 <p className="text-base leading-relaxed">
                   {movie.overview}
                 </p>
-              </div>
-            </div>
-
-            {movie.emotionalProfile && (
-              <div className="space-y-10">
-                <h4 className={`text-[10px] font-black tracking-[0.4em] uppercase ${
-                  layoutStyle === 'brutalist' ? 'bg-cinema-ink text-white px-3 py-1 inline-block' : 'text-cinema-ink/30'
-                }`}>
-                  Atmospheric Spectrum
-                </h4>
-                <div className={`h-[350px] md:h-[450px] w-full p-8 transition-all ${
-                  layoutStyle === 'neo' ? 'bg-white rounded-[3rem] shadow-xl' : 
-                  layoutStyle === 'brutalist' ? 'bg-white border-4 border-cinema-ink shadow-[12px_12px_0_var(--color-cinema-ink)]' :
-                  'bg-white/40 shadow-inner border border-cinema-ink/5'
-                }`}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={movie.emotionalProfile}>
-                      <PolarGrid stroke="#eee" />
-                      <PolarAngleAxis dataKey="label" tick={(props: any) => {
-                        const { x, y, payload } = props;
-                        return (
-                          <text x={x} y={y} textAnchor="middle" fontSize={10} fontWeight={900} fill="var(--color-cinema-ink)" className="uppercase font-mono">
-                            {payload.value}
-                          </text>
-                        );
-                      }} />
-                      <Radar
-                        name="Emotion"
-                        dataKey="intensity"
-                        stroke={movie.primaryColor || "#D8BFD8"}
-                        fill={movie.primaryColor || "#D8BFD8"}
-                        fillOpacity={0.6}
-                      />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                </div>
               </div>
             )}
           </section>
